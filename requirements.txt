@@ -1,0 +1,23 @@
+# Vizzy — VTU Telegram Assistant Bot
+# All external dependencies
+
+# Telegram bot interface (replaces OpenClaw/WhatsApp)
+python-telegram-bot==20.*
+
+# AI model — Gemini 1.5 Flash
+google-generativeai
+
+# VTU result scraping with CAPTCHA handling (open source PyPI package)
+python-vtu-api
+
+# HTML scraping
+beautifulsoup4
+requests
+
+# Background job scheduling
+apscheduler
+
+# Load .env variables
+python-dotenv
+
+# NOTE: hashlib and sqlite3 are Python built-ins — no install needed
