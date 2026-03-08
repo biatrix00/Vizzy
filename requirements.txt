@@ -2,13 +2,15 @@
 # All external dependencies
 
 # Telegram bot interface (replaces OpenClaw/WhatsApp)
-python-telegram-bot==20.*
+python-telegram-bot==21.*
 
-# AI model — Gemini 1.5 Flash
-google-generativeai
+# AI model — Gemini 1.5 Flash (google-genai is the new unified SDK)
+google-genai
 
-# VTU result scraping with CAPTCHA handling (open source PyPI package)
-python-vtu-api
+# VTU result scraping — python-vtu-api is NOT on PyPI.
+# Install directly from GitHub when implementing result fetching:
+#   pip install git+https://github.com/code-haven/python-vtu-api.git
+# OR we implement result scraping ourselves using requests + beautifulsoup4 below.
 
 # HTML scraping
 beautifulsoup4
