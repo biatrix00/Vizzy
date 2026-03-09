@@ -1,24 +1,20 @@
 """
 bot/queue.py — Rate-limited Gemini request queue for Vizzy.
 
-Implements the SDR design exactly:
-  - Uses queue.Queue() — thread-safe FIFO, single worker thread
-  - Max 4 Gemini API calls per minute (free tier)
-  - Enforces a minimum 15-second gap between consecutive API calls
-  - Checks response_cache before every API call (CACHE_TTL_HOURS TTL)
-  - On RateLimitError: waits 15s, retries once
-  - On second failure: returns a user-friendly busy message
-  - Saves all successful responses to response_cache
+  - Thread-safe FIFO queue, single worker thread
+  - Max 4 Gemini API calls per minute (free tier, 15-sec min gap)
+  - On RateLimitError (429): waits 15s, retries once
+  - On second failure: returns a friendly busy message
+  - Cache check, context injection, and cache save are handled inside
+    ai.gemini.ask_gemini() — this module owns only rate-limiting + retry.
 
 Usage:
     from bot.queue import ask_via_queue
-    response = ask_via_queue(query_text)   # blocking, safe to call from any thread
+    response = ask_via_queue(query_text)   # blocking, safe from any thread
 """
 
-import hashlib
 import logging
 import queue
-import re
 import threading
 import time
 from typing import Optional
@@ -50,18 +46,15 @@ _lock = threading.Lock()
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _normalise(query: str) -> str:
-    """Lowercase and collapse whitespace for consistent cache keys."""
-    return re.sub(r"\s+", " ", query.strip().lower())
+def _do_gemini_call_via_gemini(query_text: str) -> str:
+    """Rate-throttle, then delegate to ask_gemini() with a single 429 retry.
 
-
-def _md5(text: str) -> str:
-    return hashlib.md5(text.encode("utf-8")).hexdigest()
-
-
-def _do_gemini_call(prompt: str) -> str:
-    """Make one Gemini API call with a single retry on rate-limit failure."""
-    from ai.gemini import ask as gemini_ask
+    ask_gemini() handles cache check, context injection, API call, and
+    saving to cache. This function only adds:
+      - A 15-second minimum gap between API calls (max ~4/min on free tier)
+      - One retry after a 15-second wait on rate-limit errors (429/quota)
+    """
+    from ai.gemini import ask_gemini
 
     global _last_call_time
 
@@ -73,29 +66,26 @@ def _do_gemini_call(prompt: str) -> str:
         _last_call_time = time.monotonic()
 
     try:
-        return gemini_ask(prompt)
+        return ask_gemini(query_text)
     except Exception as first_err:
         err_str = str(first_err).lower()
         if "429" in err_str or "quota" in err_str or "rate" in err_str:
-            logger.warning("Gemini rate limit hit — waiting %ds and retrying.", RETRY_WAIT_SECONDS)
+            logger.warning("Rate limit hit — waiting %ds before retry.", RETRY_WAIT_SECONDS)
             time.sleep(RETRY_WAIT_SECONDS)
             with _lock:
                 _last_call_time = time.monotonic()
             try:
-                return gemini_ask(prompt)
+                return ask_gemini(query_text)
             except Exception as retry_err:
                 logger.error("Gemini retry also failed: %s", retry_err)
                 return BUSY_MESSAGE
         else:
-            logger.exception("Gemini call failed with non-rate-limit error.")
+            logger.exception("Gemini call failed (non-rate-limit error).")
             return "Something went wrong with the AI. Please try again."
 
 
 def _worker() -> None:
     """Background worker thread — processes queue items one at a time."""
-    from db.cache import get_cached_response, save_response
-    from ai.context import build_prompt_context
-
     logger.info("Gemini queue worker started.")
     while True:
         item = _request_queue.get()
@@ -106,28 +96,10 @@ def _worker() -> None:
         query_text, result_holder, event = item
 
         try:
-            normalised  = _normalise(query_text)
-            query_hash  = _md5(normalised)
-
-            # --- Cache check ---
-            cached = get_cached_response(query_hash)
-            if cached:
-                logger.debug("Cache hit for query hash %s", query_hash[:8])
-                result_holder["response"] = cached
-                event.set()
-                continue
-
-            # --- Build contextualised prompt ---
-            context_block = build_prompt_context()
-            full_prompt   = f"{context_block}\n\nStudent question: {query_text}"
-
-            # --- API call (with rate limiting and retry) ---
-            response = _do_gemini_call(full_prompt)
-
-            # --- Cache the fresh response (don't cache busy/error messages) ---
-            if response not in (BUSY_MESSAGE, "Something went wrong with the AI. Please try again."):
-                save_response(query_hash, response)
-
+            # ask_gemini() handles cache check, context injection, API call,
+            # and saving to cache — all in one place (ai/gemini.py).
+            # _do_gemini_call() here only adds the rate-limit gap + 429 retry.
+            response = _do_gemini_call_via_gemini(query_text)
             result_holder["response"] = response
 
         except Exception:
@@ -137,6 +109,8 @@ def _worker() -> None:
             event.set()
 
         _request_queue.task_done()
+
+
 
 
 # ---------------------------------------------------------------------------

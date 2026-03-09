@@ -1513,3 +1513,86 @@ Traceback (most recent call last):
   File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\request\_baserequest.py", line 385, in _request_wrapper
     raise Conflict(message)
 telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-03-09 00:55:16,170 [INFO] __main__: Initialising database ...
+2026-03-09 00:55:16,171 [INFO] db.database: Initialising database at ./vtu_bot.db
+2026-03-09 00:55:16,190 [INFO] db.database: Database ready — all tables exist.
+2026-03-09 00:55:21,678 [INFO] ai.gemini: Gemini client initialised (gemini-1.5-flash).
+2026-03-09 00:55:21,682 [INFO] bot.queue: Gemini queue worker thread started.
+2026-03-09 00:55:21,688 [INFO] bot.queue: Gemini queue worker started.
+2026-03-09 00:55:25,768 [INFO] __main__: Vizzy is running. Press Ctrl-C to stop.
+2026-03-09 00:55:27,262 [INFO] __main__: Bot username: @TheVizzybot
+2026-03-09 00:55:27,264 [INFO] bot.telegram_handler: All handlers registered for @TheVizzybot
+2026-03-09 00:55:27,493 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-09 00:55:27,538 [INFO] scraper.vtu_scraper: Scraping VTU announcements from https://vtu.ac.in/en/
+2026-03-09 00:55:34,098 [INFO] scraper.vtu_scraper: Parsed 4 announcement items from VTU page.
+2026-03-09 00:55:34,161 [INFO] scraper.vtu_scraper: Scrape complete. 0 new circular(s) found.
+2026-03-09 00:55:34,166 [INFO] __main__: Startup scrape complete: 0 new circular(s).
+2026-03-09 00:56:38,723 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-03-09 00:56:39,348 [WARNING] bot.queue: Gemini rate limit hit — waiting 15s and retrying.
+2026-03-09 00:56:54,351 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-03-09 00:56:54,737 [ERROR] bot.queue: Gemini retry also failed: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}
+2026-03-09 01:01:23,237 [INFO] apscheduler.scheduler: Scheduler has been shut down
+2026-03-09 01:18:19,891 [INFO] __main__: Initialising database ...
+2026-03-09 01:18:19,892 [INFO] db.database: Initialising database at ./vtu_bot.db
+2026-03-09 01:18:19,910 [INFO] db.database: Database ready — all tables exist.
+2026-03-09 01:18:25,213 [INFO] ai.gemini: Gemini client initialised (gemini-1.5-flash).
+2026-03-09 01:18:25,231 [INFO] bot.queue: Gemini queue worker started.
+2026-03-09 01:18:25,231 [INFO] bot.queue: Gemini queue worker thread started.
+2026-03-09 01:18:27,827 [INFO] __main__: Vizzy is running. Press Ctrl-C to stop.
+2026-03-09 01:18:29,272 [INFO] __main__: Bot username: @TheVizzybot
+2026-03-09 01:18:29,277 [INFO] bot.telegram_handler: All handlers registered for @TheVizzybot
+2026-03-09 01:18:29,499 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-09 01:18:29,540 [INFO] scraper.vtu_scraper: Scraping VTU announcements from https://vtu.ac.in/en/
+2026-03-09 01:18:32,700 [INFO] scraper.vtu_scraper: Parsed 4 announcement items from VTU page.
+2026-03-09 01:18:32,761 [INFO] scraper.vtu_scraper: Scrape complete. 0 new circular(s) found.
+2026-03-09 01:18:32,762 [INFO] __main__: Startup scrape complete: 0 new circular(s).
+2026-03-09 01:18:41,499 [INFO] google_genai.models: AFC is enabled with max remote calls: 10.
+2026-03-09 01:18:42,071 [ERROR] ai.gemini: ask_gemini() failed for query: when is vtu releasing revaluation for 3rd sem
+Traceback (most recent call last):
+  File "C:\Users\koush\repos\VTU assistent\Vizzy\ai\gemini.py", line 92, in ask_gemini
+    response_text = ask(full_prompt)
+  File "C:\Users\koush\repos\VTU assistent\Vizzy\ai\gemini.py", line 118, in ask
+    response = _client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+    )
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\models.py", line 5709, in generate_content
+    response = self._generate_content(
+        model=model, contents=contents, config=parsed_config
+    )
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\models.py", line 4371, in _generate_content
+    response = self._api_client.request(
+        'post', path, request_dict, http_options
+    )
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\_api_client.py", line 1401, in request
+    response = self._request(http_request, http_options, stream=False)
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\_api_client.py", line 1237, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\_api_client.py", line 1214, in _request_once
+    errors.APIError.raise_for_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\errors.py", line 134, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\koush\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\genai\errors.py", line 159, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}
+2026-03-09 01:20:21,397 [INFO] apscheduler.scheduler: Scheduler has been shut down

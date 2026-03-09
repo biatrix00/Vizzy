@@ -9,10 +9,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 _SYSTEM_PREAMBLE = (
-    "You are Vizzy, a helpful assistant for VTU (Visvesvaraya Technological University) "
-    "students in Karnataka, India. Answer questions clearly and concisely. "
-    "If you don't know something specific about VTU, say so rather than guessing. "
-    "Keep responses under 300 words."
+    "You are Vizzy, a VTU student assistant. "
+    "Answer only VTU-related questions. "
+    "If a question is unrelated to VTU or its students, politely decline. "
+    "Keep responses clear, concise, and under 300 words."
 )
 
 _VTU_SCHEME_INFO = (
@@ -31,7 +31,7 @@ def build_prompt_context() -> str:
       2. Latest 5 VTU circulars from local DB
       3. Static VTU scheme info
     """
-    lines = [_SYSTEM_PREAMBLE, "", "--- Latest VTU Updates ---"]
+    lines = [_SYSTEM_PREAMBLE, "", "Here are the latest VTU circulars for context:"]
 
     try:
         from db.circulars import get_recent_circulars
@@ -49,3 +49,4 @@ def build_prompt_context() -> str:
 
     lines += ["", "--- VTU Scheme Info ---", _VTU_SCHEME_INFO, ""]
     return "\n".join(lines)
+
